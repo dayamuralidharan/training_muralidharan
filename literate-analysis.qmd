@@ -1,0 +1,37 @@
+---
+title: "Literate Analysis"
+author: "Daya Muralidharan"
+format: html
+---
+
+## Introduction
+
+### About this Data
+
+This data set contains North Pole Environmental Observatory Bottle Chemistry data. Data is available at this [link](https://cn.dataone.org/cn/v2/resolve/urn:uuid:35ad7624-b159-4e29-a700-0c0770419941)
+
+### Setup
+```{r}
+library(readr)
+```
+
+
+#### Read Data
+```{r}
+#1 warning: false
+#1 message: false
+
+bg_chem <- read_csv("data/BGchem2008data.csv")
+```
+
+
+## Analysis
+
+### Calculate Summary Statistics
+
+
+### Calculate Mean Redfield Ratio
+
+### Plot Redfield Ratio
+
+## Conclusion
