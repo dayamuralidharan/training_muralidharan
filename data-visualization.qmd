@@ -1,0 +1,81 @@
+---
+title: "Data Visualization"
+format: html
+---
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(forcats) # makes working with factors easier
+library(ggplot2)
+library(leaflet) # interactive maps
+library(DT) # interactive tables
+library(scales) # scale functions for visualization
+library(janitor) # expedite cleaning and exploring data
+library(viridis) # colorblind friendly color pallet
+```
+
+## Read Data
+
+```{r}
+delta_visits <- read_csv('https://portal.edirepository.org/nis/dataviewer?packageid=edi.587.1&entityid=cda8c1384af0089b506d51ad8507641f') %>%
+  janitor::clean_names()
+```
+
+```{r}
+## Check out column names
+colnames(delta_visits)
+
+## Peak at each column and class
+glimpse(delta_visits)
+
+## From when to when
+range(delta_visits$date)
+
+## First and last rows
+head(delta_visits)
+tail(delta_visits)
+
+## Which time of day?
+unique(delta_visits$time_of_day)
+```
+
+```{r}
+visits_long <- delta_visits %>% 
+    pivot_longer(cols = c("sm_boat", "med_boat", "lrg_boat", "bank_angler", "scientist", "cars"),
+                 names_to = "visitor_type",
+                 values_to = "quantity") %>%
+    rename(restore_loc = eco_restore_approximate_location) %>% 
+    select(-notes)
+
+## Checking the outcome
+head(visits_long)
+```
+
+```{r}
+daily_visits_loc <- visits_long %>%
+    group_by(restore_loc, date, visitor_type) %>% 
+    summarise(daily_visits = sum(quantity))
+    
+head(daily_visits_loc)
+```
+
+```{r}
+## Option 1 - data and mapping called in the ggplot() function
+ggplot(data = daily_visits_loc,
+       aes(x = restore_loc, y = daily_visits))+
+    geom_col()
+
+
+## Option 2 - data called in ggplot function; mapping called in geom
+ggplot(data = daily_visits_loc) +
+    geom_col(aes(x = restore_loc, y = daily_visits))
+
+
+## Option 3 - data and mapping called in geom
+ggplot() +
+    geom_col(data = daily_visits_loc,
+             aes(x = restore_loc, y = daily_visits))
+```
+
