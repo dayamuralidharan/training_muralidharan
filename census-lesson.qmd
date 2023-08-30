@@ -1,0 +1,16 @@
+---
+title: "census lesson"
+format: html
+---
+
+```{r}
+library(tidycensus)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+census_api_key("0b213304aba6e6f5f5b4a5ed66e13ccc2478dfc4", install = TRUE)
+```
+
