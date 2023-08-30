@@ -10,7 +10,24 @@ library(tidyr)
 library(ggplot2)
 ```
 
+
 ```{r}
 census_api_key("0b213304aba6e6f5f5b4a5ed66e13ccc2478dfc4", install = TRUE)
+```
+
+# Decennial population by State
+
+```{r}
+pop_2020 <- get_decennial(
+    geography = "state",
+    variable = "P1_001N",
+    year = 2020)
+```
+
+```{r}
+pop_2010 <- get_decennial(
+  geography = "state", 
+  variables = "P001001",
+  year = 2010)
 ```
 
