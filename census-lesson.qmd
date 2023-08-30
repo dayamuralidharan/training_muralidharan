@@ -31,3 +31,109 @@ pop_2010 <- get_decennial(
   year = 2010)
 ```
 
+```{r}
+table_p2_2020 <- get_decennial(
+    geography = "state",
+    table = "P2",
+    year = 2020)
+```
+
+```{r}
+unique(table_p2_2020$variable)
+```
+
+```{r}
+vars_pl_2020 <-  load_variables(2020, "pl")
+
+## for 20210
+vars_pl_2010 <-  load_variables(2010, "pl")
+```
+
+```{r}
+vars_dhc_2020 <-  load_variables(2020, "dhc")
+
+## Note you have to specify the file with sumfile =
+household_2020 <- get_decennial(
+    geography = "state",
+    variable = "H10_001N",
+    year = 2020,
+    sumfile = "dhc")
+```
+
+```{r}
+delta_hispanic <- get_decennial(
+  geography = "county",
+  state = "CA",
+  county = c("Alameda", "Contra Costa", "Sacramento", "San Joaquin", "Solano", "Yolo"),
+  variables = "P2_002N",
+  year = 2020)
+```
+
+```{r}
+## Vector with race variables codes
+race_vars <- c(
+  Hispanic = "P2_002N",
+  White = "P2_005N",
+  Black = "P2_006N",
+  Native = "P2_007N",
+  Asian = "P2_008N",
+  HIPI = "P2_009N") ## Native Hawaiian and other Pacific Islander
+
+delta_race <- get_decennial(
+  geography = "county",
+  state = "CA",
+  county = c("Alameda", "Contra Costa", "Sacramento", "San Joaquin", "Solano", "Yolo"),
+  variables = race_vars,
+  summary_var = "P2_001N",
+  year = 2020)
+```
+
+```{r}
+delta_track_hw <- get_decennial(
+  geography = "tract",
+  variables = c(hispanic = "P2_002N",
+                white = "P2_005N"),
+  summary_var = "P2_001N",
+  state = "CA",
+  county = c("Alameda", "Contra Costa", "Sacramento", "San Joaquin", "Solano", "Yolo"),
+  year = 2020)
+```
+
+
+```{r}
+delta_track_clean <- delta_track_hw %>% 
+    mutate(percent = 100 * (value / summary_value)) %>% 
+    separate(NAME, into = c("tract", "county", "state"),
+           sep = ", ")
+```
+
+
+```{r}
+ggplot(delta_track_clean, 
+       aes(x = percent, fill = county)) + 
+  geom_density(alpha = 0.3)+
+    facet_wrap(~variable)+
+    theme_light()
+```
+
+```{r}
+## 1-year survey
+median_income_1yr <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "CA",
+  year = 2021,
+  survey = "acs1")
+
+## 5-year survey. Defaults to the 2017-2021 5-year ACS
+median_income_5yr <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "CA")
+```
+
+```{r}
+## variables for 5-year 2017-2021 ACS
+vars <- load_variables(2021, "acs5")
+```
+
