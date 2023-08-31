@@ -1,0 +1,82 @@
+---
+title: "Intro to Text Data"
+format: html
+---
+
+# load libraries
+
+```{r}
+library(gutenbergr) # access public domain texts from Project Gutenberg
+library(tidytext) # text mining using tidy tools
+library(dplyr) # wrangle data
+library(ggplot2) # plot data
+library(wordcloud) # to render wordclouds
+```
+
+```{r}
+gutenberg_works(title == "The Strange Case of Dr. Jekyll and Mr. Hyde") # jekyll hyde text
+```
+
+```{r}
+# access text data using id number from `gutenberg_works()`
+jekyll_hyde_corp <- gutenberg_download(42)
+```
+
+```{r}
+# tidy text data - unnest and remove stop words
+tidy_jekyll_hyde <- jekyll_hyde_corp %>% 
+    unnest_tokens(word, text)
+```
+
+```{r}
+# remove stop words
+tidy_jekyll_hyde <- tidy_jekyll_hyde %>% dplyr::anti_join(stop_words, by = "word")
+```
+
+```{r}
+# calculate top 10 most frequent words
+count_jekyll_hyde <- tidy_jekyll_hyde %>%
+    count(word) %>% 
+    slice_max(n = 10, order_by = n)
+```
+
+```{r}
+# bar plot
+ggplot(data = count_jekyll_hyde, aes(n, reorder(word, n))) +
+  geom_col() +
+    labs(x = "Count",
+         y = "Token")
+```
+
+```{r}
+# initial lollipop plot
+ggplot(data = count_jekyll_hyde, aes(x=word, y=n)) +
+    geom_point() +
+    geom_segment(aes(x=word, xend=word, y=0, yend=n)) +
+    coord_flip() +
+    labs(x = "Token",
+         y = "Count")
+
+# ascending order pretty lollipop plot
+ggplot(data = count_jekyll_hyde, aes(x=reorder(word, n), y=n)) +
+    geom_point(color="cyan4", size=14) +
+    geom_segment(aes(x=word, xend=word, y=0, yend=n), color="cyan4") +
+    coord_flip() +
+    labs(title = "Top Ten Words in The Strange Case of Dr. Jekyll and Mr. Hyde",
+         x = NULL,
+         y = "Count") +
+    theme_minimal() +
+    theme(
+        panel.grid.major.y = element_blank()
+    )
+```
+
+```{r}
+#define a color palette
+pal <- brewer.pal(8,"Dark2")
+
+#plot the 50 most common words
+count_jekyll_hyde %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+```
+
