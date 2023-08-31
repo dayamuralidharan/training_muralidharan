@@ -80,3 +80,87 @@ count_jekyll_hyde %>%
   with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
 ```
 
+# Explore unstructured text data from PDF
+
+## load libraries
+
+```{r}
+library(tidytext) # tidy text tools
+library(quanteda) # create a corpus
+library(pdftools) # read in data
+library(dplyr) # wrangle data
+library(stringr) # string manipulation
+library(ggplot2) # plots
+library(wordcloud)
+```
+## read in data
+
+```{r}
+# ch 5
+path_df <- "data/dsc_ch05.pdf"
+dp_ch5 <- pdftools::pdf_text(path_df)
+```
+
+
+
+```{r}
+corpus_dp_ch5 <- quanteda::corpus(dp_ch5)
+```
+
+```{r}
+tidy_dp_ch5 <- tidytext::tidy(corpus_dp_ch5)
+```
+
+```{r}
+unnest_dp_ch5 <- tidy_dp_ch5 %>% 
+    unnest_tokens(output = word,
+                  input = text) 
+```
+
+```{r}
+words_dp_ch5 <- unnest_dp_ch5 %>% 
+    dplyr::anti_join(stop_words)
+```
+```{r}
+count_dp_ch5 <- words_dp_ch5 %>%
+    count(word) %>%
+    slice_max(n = 10, order_by = n)
+```
+
+
+```{r}
+# bar plot
+ggplot(count_dp_ch5, aes(x = reorder(word, n), y = n)) +
+    geom_col() +
+    coord_flip() +
+    labs(title = "Top 10 Most Frequently Occurring Words in Chapter 8 of the Delta Plan",
+         x = NULL,
+         y = "count") +
+    theme_minimal()
+```
+```{r}
+# lollipop plot
+ggplot(data = count_dp_ch5, aes(x=reorder(word, n), y=n)) +
+    geom_point(color="red", size=10) +
+    geom_segment(aes(x=word, xend=word, y=0, yend=n)) +
+    coord_flip() +
+    labs(title = "Top 10 Most Frequently Occurring Words in Chapter 8 of the Delta Plan",
+         x = NULL,
+         y = "Count") +
+    theme_minimal()
+```
+```{r}
+# wordcloud
+
+#define a color palette
+pal <- brewer.pal(8,"Dark2")
+
+#plot the 50 most common words
+count_dp_ch5 %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+
+
+wordcloud(words = count_dp_ch5$word,
+          freq = count_dp_ch5$n)
+```
+
