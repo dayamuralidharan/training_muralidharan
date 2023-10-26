@@ -3,6 +3,8 @@ title: "census lesson"
 format: html
 ---
 
+## modified for check
+
 ```{r}
 library(tidycensus)
 library(dplyr)
