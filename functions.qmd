@@ -3,6 +3,9 @@ title: "functions"
 author: "DM"
 format: html
 ---
+
+## Functions
+
 ```{r}
 library(roxygen2)
 ```
