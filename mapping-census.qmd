@@ -1,0 +1,36 @@
+---
+title: "mapping-census-data"
+format: html
+---
+
+## Load libraries
+
+```{r}
+library(tidycensus)
+library(mapview)
+library(tigris)
+library(ggplot2)
+library(dplyr)
+library(sf)
+```
+
+
+```{r}
+census_api_key("7d7053aa28760444cdf49ae82b9c3260efda85f0", install = TRUE)
+```
+
+## Income in CA by county
+
+```{r}
+ca_income <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "CA",
+  year = 2021,
+  geometry = TRUE
+)
+```
+```{r}
+plot(ca_income["estimate"])
+```
+
